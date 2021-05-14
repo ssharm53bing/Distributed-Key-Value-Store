@@ -51,8 +51,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
          while ((line = fileReader.readLine()) != null) {
              String[] replicas = line.split(",");
 	     String ip = replicas[0].split(":")[0];
-	     String port = replicas[0].split(":")[1]
-             replica_list.add(createReplica(ip, port, replicas[1], replicas[2]);
+	     String port = replicas[0].split(":")[1];
+         replica_list.add(create_replica(ip, port, replicas[1], replicas[2]);
             }
     } catch (FileNotFoundException e) {
                 e.printStackTrace();
