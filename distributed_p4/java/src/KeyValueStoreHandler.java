@@ -24,7 +24,10 @@ import java.nio.file.Paths;
 import java.io.*;
 // Generated code
 
+
 public class KeyValueStoreHandler implements KeyValueStore.Iface {
+  List<ReplicaInfo> rep_List;
+
 
   public void putKey(KeyValuePair keyValuePair, int consistency_level) throws SystemException, org.apache.thrift.TException{  
 	System.out.println("Put value called");
@@ -34,5 +37,37 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	System.out.println("Get Value Called");
 	return "Success";
 }
+
+
+// pre-configured replicas
+  public static List<ReplicaInfo> getReplicas(String filename){
+    File file = new File(filename);
+    BufferedReader fileReader = null;
+    List<ReplicaInfo> rep_list = new ArrayList<ReplicaInfo>();
+   
+    try {
+         fileReader = new BufferedReader(new FileReader(file));
+         String line = null;
+         while ((line = fileReader.readLine()) != null) {
+             String[] replicas = line.split(",");
+	     String ip = replicas[0].split(":")[0];
+	     String port = replicas[0].split(":")[1]
+             rep_list.add(createReplica(ip, port, replicas[1], replicas[2]);
+            }
+    } catch (FileNotFoundException e) {
+                e.printStackTrace();
+    }
+    return rep_list
+            
+   }
+    
+  public static ReplicaInfo create_replica(String ip, String port, String start_key, String end_key){
+    ReplicaInfo replica = new ReplicaInfo();
+    replica.ip = ip;
+    replica.port = Integer.parseInt(port);
+    replica.start_key = Integer.parseInt(start_key);
+    replica.end_key = Integer.parseInt(end_key);
+    return replica;
+	}
 
 }
