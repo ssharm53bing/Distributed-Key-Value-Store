@@ -40,10 +40,10 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 
 
 // pre-configured replicas
-  public static List<ReplicaInfo> getReplicas(String filename){
+  public static void getReplicas(String filename){
     File file = new File(filename);
     BufferedReader fileReader = null;
-    List<ReplicaInfo> rep_list = new ArrayList<ReplicaInfo>();
+    List<ReplicaInfo> replica_list = new ArrayList<ReplicaInfo>();
    
     try {
          fileReader = new BufferedReader(new FileReader(file));
@@ -52,12 +52,13 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
              String[] replicas = line.split(",");
 	     String ip = replicas[0].split(":")[0];
 	     String port = replicas[0].split(":")[1]
-             rep_list.add(createReplica(ip, port, replicas[1], replicas[2]);
+             replica_list.add(createReplica(ip, port, replicas[1], replicas[2]);
             }
     } catch (FileNotFoundException e) {
                 e.printStackTrace();
     }
-    return rep_list
+                          
+    rep_List = replica_list;
             
    }
     
