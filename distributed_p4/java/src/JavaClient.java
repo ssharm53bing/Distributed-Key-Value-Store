@@ -59,9 +59,9 @@ public class JavaClient {
       TProtocol protocol = new  TBinaryProtocol(transport);
       KeyValueStore.Client client = new KeyValueStore.Client(protocol);
       if(args[3].equals("get")){
-      performRead(client, args[4]);
+      performRead(client, Integer.parseInt(args[4]), Integer.parseInt(args[5]));
       }else if(args[3].equals("put")){
-       performWrite(client, args[4]);
+       performWrite(client, Integer.parseInt(args[4]), args[5],Integer.parseInt(args[6]));
       }else{
        System.out.println("Please mention read/write");
       }
@@ -72,19 +72,21 @@ public class JavaClient {
     } 
   }
 
-  private static void performRead(KeyValueStore.Client client, String filename) throws TException
+  private static void performRead(KeyValueStore.Client client, int key, int consistency_level) throws TException
  {
   try{	 
-      client.getKey(23, 1);
+       String value = client.getKey(key,consistency_level);
+       System.out.println(value);
   }catch(SystemException e){	
   
   }
  }
-  private static void performWrite(KeyValueStore.Client client, String filename) throws TException
+  private static void performWrite(KeyValueStore.Client client, int key, String value, int consistency_level) throws TException
  {
        KeyValuePair keyValuePair = new KeyValuePair();
        keyValuePair.key = 101;
        keyValuePair.value = "Hello World";
-       client.putKey(keyValuePair,1);
- } 
+       System.out.println(keyValuePair.key);
+       client.putKey(key,value , consistency_level);
+ }
 }

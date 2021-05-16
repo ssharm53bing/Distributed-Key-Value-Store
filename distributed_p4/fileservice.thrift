@@ -20,4 +20,7 @@ service KeyValueStore {
   
   string getKey(1: i32 key, 2: i32 consistency_level)
     throws (1: SystemException systemException),
+
+  int putReplicaKey(1:KeyValuePair keyvaluepair)
+    throws (1: SystemException systemException),
 }

@@ -40,7 +40,7 @@ public class JavaServer {
 
   public static void main(String [] args) {
     try {
-      handler = new KeyValueStoreHandler();
+      handler = new KeyValueStoreHandler(Integer.valueOf(args[0]));
       processor = new KeyValueStore.Processor(handler);
       port= Integer.valueOf(args[0]);
       Runnable simple = new Runnable() {
