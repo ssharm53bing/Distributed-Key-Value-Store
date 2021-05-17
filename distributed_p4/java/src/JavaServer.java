@@ -38,8 +38,21 @@ public class JavaServer {
 
   public static int port;
 
-  public static void main(String [] args) {
-    try {
+  public static void main(String [] args) {	  
+    String filepath = "diskcommitlog/"+args[0];
+     try {
+            File myObj = new File(filepath);
+            if (myObj.createNewFile()) {
+	    	System.out.println("New File Created");
+	    }else{
+	    	System.out.println("File Exists");
+	    }
+     } catch(IOException e){
+     	
+     }	    
+
+
+     try {
       handler = new KeyValueStoreHandler(Integer.valueOf(args[0]));
       processor = new KeyValueStore.Processor(handler);
       port= Integer.valueOf(args[0]);

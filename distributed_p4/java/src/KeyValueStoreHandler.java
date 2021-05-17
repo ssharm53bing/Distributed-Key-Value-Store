@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 // Generated code
 
 
@@ -45,12 +48,13 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 
   public KeyValueStoreHandler(int port){
 	  this.port = port;
-   try{
-     keyValueList = new ArrayList<KeyValuePair>();
-     getReplicas("Replicas.txt");
-   }catch(IOException e){
-   	
-   }	  
+	   try{
+	        keyValueList = new ArrayList<KeyValuePair>();
+	        getReplicas("Replicas.txt");
+	     }catch(IOException e){
+
+	}
+	  replay_commit_log(String.valueOf(port));	  
   }
   public void putKey(int key, java.lang.String value, int consistency_level) throws SystemException, org.apache.thrift.TException{  
         System.out.println("Put Key Called");
@@ -78,9 +82,19 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	
 	j = i;
 	while(test_count < 3 ){
-	 if( rep_List.get(j).ip == ip_address && rep_List.get(j).port == port){
+	System.out.println(rep_List.get(j).ip);
+	System.out.println(rep_List.get(j).port);
+        System.out.println(ip_address);
+	System.out.println(port);
+
+	 if( rep_List.get(j).port == port){
+          System.out.println("Inside Replica Server");
           total_active_replicas++;					               
 	  j++;
+	  test_count++;
+	  if(j > 3 ){
+	  	j = 0;
+	  }
 	 }
 	 else{
 	     remote_call_ip = rep_List.get(j).ip;
@@ -115,8 +129,13 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
 
 	while(count < 3){
-		if( rep_List.get(i).ip == ip_address && rep_List.get(i).port == port){
+		if( rep_List.get(i).port == port){
 			put_replica_key(key, value);
+			i++;
+			count++;
+			if(i > 3){
+			  i = 0 ;
+			}
 		}
 		else{
 			remote_call_ip = rep_List.get(i).ip;
@@ -200,6 +219,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   public void put_replica_key(int key, String value){
   	System.out.println("Put Value Called1");
         System.out.println(key);
+	write_commit_log(key,value);
         int i = 0;
         while(i < keyValueList.size()){
 	       if(keyValueList.get(i).key == key){
@@ -221,6 +241,69 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	         }	  
   
   }
+
+ public void restore_replica_key(int key, String value){
+	System.out.println("Put Value Called1");
+	System.out.println(key);
+	int i = 0;
+	while(i < keyValueList.size()){
+	   if(keyValueList.get(i).key == key){
+	        break;
+	}
+	   else{
+	        i++;
+	}
+	}
+	if(i == 0 || i == keyValueList.size()){
+	      KeyValuePair keyValuePair = new KeyValuePair();
+	      keyValuePair.key = key;
+	      keyValuePair.value = value;
+	      keyValueList.add(keyValuePair);
+	}
+	else{
+	      keyValueList.get(i).key = key;
+	      keyValueList.get(i).value = value;
+	}
+ }
+
+  public void write_commit_log(int key, String value){		
+	String filepath = "diskcommitlog/"+String.valueOf(port);
+	try{
+        File myFile = new File(filepath);
+	FileWriter fw = new FileWriter(myFile.getAbsoluteFile(),true);
+	BufferedWriter bw = new BufferedWriter(fw);
+	bw.write(String.valueOf(key));
+	bw.write(",");
+	bw.write(value);
+	bw.write("\n");
+	bw.close();
+	}
+	catch(IOException e){
+	
+	}
+  }
+  public void replay_commit_log(String f){
+	 String path = "diskcommitlog/"+f; 
+    	 System.out.println("Replaying Log from file"+f);
+	 File file = new File(path);
+
+    BufferedReader fileReader = null;
+    try {                                                                                                                        fileReader = new BufferedReader(new FileReader(file));
+	String line = null;
+	while ((line = fileReader.readLine()) != null) {
+	   System.out.println("Inside While Loop");
+	   String[] replicas = line.split(",");
+	   int key = Integer.valueOf(replicas[0]);
+	   String value = replicas[1];
+	   restore_replica_key(key,value);
+	}
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	} catch(IOException e){
+	    e.printStackTrace();
+	}
+  }
+
   public int testConnection(){
 	return 1;
   }

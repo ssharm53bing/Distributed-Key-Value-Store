@@ -14,6 +14,9 @@ struct ReplicaInfo{
   4: optional i32 end_key;
 }
 
+
+
+
 service KeyValueStore {
   void putKey(1: i32 key, 2: string value, 3: i32 consistency_level )
     throws (1: SystemException systemException),
@@ -22,6 +25,12 @@ service KeyValueStore {
     throws (1: SystemException systemException),
 
   void put_replica_key(1: i32 key, 2: string value),
+
+  void restore_replica_key(1: i32 key, 2: string value),
+  
+  void write_commit_log(1: i32 key, 2: string value),
+
+  void replay_commit_log(1: string filename),
 
   i32 testConnection(),
 }
