@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 // Generated code
 
 
@@ -151,17 +152,70 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   public String getKey(int key, int consistency_level) throws SystemException, org.apache.thrift.TException {
 	System.out.println("Get Value Called");
 	System.out.println(key);
-	int i = 0;
-	while(i< keyValueList.size()){
-	System.out.println(keyValueList.get(i).key);
-	if(keyValueList.get(i).key == key){
-	       return keyValueList.get(i).value;
-         }    
-	    else{
-	    	i++;
-	    }
-	}
-	return "Cannot Find the key";
+      TTransport transport;
+      
+      String result = "";
+      List<KeyValuePair> read_list = new ArrayList<KeyValuePair>();
+      for(ReplicaInfo rep:rep_List){
+          if (read_list.size() == consistency_level) {
+              System.out.println("Success");
+              KeyValuePair resVal = read_list.get(0);
+                for(KeyValuePair pair: read_list){
+                    if(resVal.time < pair.time){
+                        resVal = pair;
+                    }
+                }
+                result = resVal.value;
+              System.out.println(result);
+              break;
+            }
+          else{
+              remote_call_ip = rep.ip;
+              remote_call_port = rep.port;
+              System.out.println("Storing the Value");
+              System.out.println(remote_call_ip);
+              System.out.println(remote_call_port);
+              transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
+              transport.open();
+              TProtocol protocol = new  TBinaryProtocol(transport);
+              KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+              try{
+              	KeyValuePair pair = client.perform_read(key);
+              	
+              	if(pair.value != null) {read_list.add(pair);
+              	System.out.println(pair.value);
+              }
+                  }
+              catch(Exception e){
+                  System.out.println(e);
+              }
+              transport.close();
+          }
+      }
+      	if (read_list.size() == consistency_level) {
+              System.out.println("Success");
+              KeyValuePair resVal = read_list.get(0);
+                for(KeyValuePair pair: read_list){
+                    if(resVal.time < pair.time){
+                        resVal = pair;
+                    }
+                    
+                }
+                result = resVal.value;
+              System.out.println(result);
+            }
+      
+   
+      if(read_list.size() < consistency_level){
+         SystemException systemException = new SystemException();
+         systemException.message = "Not enough server is active";
+         throw systemException;
+
+      }
+      if(result == ""){
+      	return "not Found";
+      }
+	return result;
 }
 
 
@@ -198,7 +252,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   }
   
   public void put_replica_key(int key, String value){
-  	System.out.println("Put Value Called1");
+        System.out.println("Put Value Called1");
         System.out.println(key);
         int i = 0;
         while(i < keyValueList.size()){
@@ -209,18 +263,38 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 		     i++;
 		}
            }
+        Timestamp t = new Timestamp(System.currentTimeMillis());
         if(i == 0 || i == keyValueList.size()){
 	         KeyValuePair keyValuePair = new KeyValuePair();
 	          keyValuePair.key = key;
 	          keyValuePair.value = value;
+              keyValuePair.time = t.getTime();
 	         keyValueList.add(keyValuePair);
                }
         else{
 	         keyValueList.get(i).key = key;
 	          keyValueList.get(i).value = value;
-	         }	  
-  
+            keyValueList.get(i).time = t.getTime();
+	         }
   }
+    
+  public KeyValuePair perform_read(int key){
+    
+    int i = 0;
+    while(i< keyValueList.size()){
+    if(keyValueList.get(i).key == key){
+         return keyValueList.get(i);
+       }
+      else{
+          i++;
+      }
+   }
+   KeyValuePair pair = new KeyValuePair();
+    pair.key = -1;
+    System.out.println("key not found");
+    return pair;
+  }
+      
   public int testConnection(){
 	return 1;
   }

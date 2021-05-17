@@ -5,6 +5,7 @@ exception SystemException {
 struct KeyValuePair {
   1: optional i32 key;
   2: optional string value;
+  3: optional i64 time;
 }
 
 struct ReplicaInfo{
@@ -22,6 +23,8 @@ service KeyValueStore {
     throws (1: SystemException systemException),
 
   void put_replica_key(1: i32 key, 2: string value),
+  
+  KeyValuePair perform_read(1: i32 key),
 
   i32 testConnection(),
 }
