@@ -32,13 +32,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-<<<<<<< HEAD
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-=======
 import java.sql.Timestamp;
->>>>>>> 0903b92a86ab8997f61c22bb1845adca5d594c2d
 // Generated code
 
 
@@ -360,7 +357,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
     //System.out.println("key not found");
     return pair;
   }
-<<<<<<< HEAD
 
  public void restore_replica_key(int key, String value){
 	System.out.println("Put Value Called1");
@@ -424,9 +420,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
   }
 
-=======
-      
->>>>>>> 0903b92a86ab8997f61c22bb1845adca5d594c2d
   public int testConnection(){
 	return 1;
   }
