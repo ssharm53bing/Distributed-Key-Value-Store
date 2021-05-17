@@ -24,7 +24,7 @@ service KeyValueStore {
 
   void put_replica_key(1: i32 key, 2: string value),
   
-  KeyValuePair perform_read(1: i32 key),
+  KeyValuePair get_value(1: i32 key),
 
   i32 testConnection(),
 }

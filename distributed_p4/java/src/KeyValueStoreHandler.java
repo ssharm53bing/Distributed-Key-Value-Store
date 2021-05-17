@@ -153,11 +153,54 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	System.out.println("Get Value Called");
 	System.out.println(key);
       TTransport transport;
-      
+      try{
+         InetAddress ia = InetAddress.getLocalHost();
+         ip_address = ia.getHostAddress();
+      } catch(UnknownHostException e){
+
+      }
       String result = "";
+      int i =0;
       List<KeyValuePair> read_list = new ArrayList<KeyValuePair>();
-      for(ReplicaInfo rep:rep_List){
-          if (read_list.size() == consistency_level) {
+      
+      while(i<rep_List.size()){
+          if(rep_List.get(i).ip == ip_address && rep_List.get(i).port==port){
+              break;
+          }
+          i++;
+      }
+      KeyValuePair p = get_value(key);
+      if(p.value != null) {
+        read_list.add(p);
+          }
+      int count=0;
+      
+      while(count<3){
+          if(read_list.size()<consistency_level){
+              i++;
+              i = i%4;
+              remote_call_ip = rep_List.get(i).ip;
+              remote_call_port = rep_List.get(i).port;
+              System.out.println("calling next replica");
+              System.out.println(remote_call_ip);
+              System.out.println(remote_call_port);
+              transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
+              transport.open();
+              TProtocol protocol = new  TBinaryProtocol(transport);
+              KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+              try{
+                  KeyValuePair pair = client.get_value(key);
+                  if(pair.value != null) {
+                    read_list.add(pair);
+                    //System.out.println(pair.value);
+              }
+                  }
+              catch(Exception e){
+                  System.out.println(e);
+              }
+              transport.close();
+          }
+          else if (read_list.size() == consistency_level) {
               System.out.println("Success");
               KeyValuePair resVal = read_list.get(0);
                 for(KeyValuePair pair: read_list){
@@ -168,52 +211,20 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
                 result = resVal.value;
               System.out.println(result);
               break;
-            }
-          else{
-              remote_call_ip = rep.ip;
-              remote_call_port = rep.port;
-              System.out.println("Storing the Value");
-              System.out.println(remote_call_ip);
-              System.out.println(remote_call_port);
-              transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-              transport.open();
-              TProtocol protocol = new  TBinaryProtocol(transport);
-              KeyValueStore.Client client = new KeyValueStore.Client(protocol);
-              try{
-              	KeyValuePair pair = client.perform_read(key);
-              	
-              	if(pair.value != null) {read_list.add(pair);
-              	System.out.println(pair.value);
               }
-                  }
-              catch(Exception e){
-                  System.out.println(e);
-              }
-              transport.close();
-          }
+          count++;
       }
-      	if (read_list.size() == consistency_level) {
-              System.out.println("Success");
-              KeyValuePair resVal = read_list.get(0);
-                for(KeyValuePair pair: read_list){
-                    if(resVal.time < pair.time){
-                        resVal = pair;
-                    }
-                    
-                }
-                result = resVal.value;
-              System.out.println(result);
-            }
-      
    
-      if(read_list.size() < consistency_level){
+    if(read_list.size() < consistency_level){
          SystemException systemException = new SystemException();
          systemException.message = "Not enough server is active";
          throw systemException;
 
-      }
-      if(result == ""){
-      	return "not Found";
+    }
+    if(result == ""){
+        SystemException systemException = new SystemException();
+        systemException.message = "key not in system";
+        throw systemException;
       }
 	return result;
 }
@@ -278,7 +289,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	         }
   }
     
-  public KeyValuePair perform_read(int key){
+  public KeyValuePair get_value(int key){
     
     int i = 0;
     while(i< keyValueList.size()){
@@ -290,8 +301,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
       }
    }
    KeyValuePair pair = new KeyValuePair();
-    pair.key = -1;
-    System.out.println("key not found");
+    //System.out.println("key not found");
     return pair;
   }
       
