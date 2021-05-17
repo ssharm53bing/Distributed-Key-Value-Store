@@ -43,6 +43,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   private int port;
   private String remote_call_ip;
   private int remote_call_port;
+  private List<Hint> hints;
 
   public KeyValueStoreHandler(int port){
 	  this.port = port;
@@ -134,6 +135,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			  total_success++;
 			}
 			catch(Exception e){
+				System.out.println(e);
 			}
 			i++;
 			count++;
@@ -226,8 +228,39 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
         systemException.message = "key not in system";
         throw systemException;
       }
+      
+      //perform Hinted_Handoff
+      hintedHandoff(consistency_level);
+      
 	return result;
 }
+    
+    public void hintedHandoff(int consistency_level){
+        List<Hint> hinted_list = hints; //temporary data structure
+        for(Hint hint: hinted_list){
+            //send hint to the server
+            remote_call_ip = hint.ip;
+            remote_call_port = hint.port;
+            try{
+            TTransport transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
+            transport.open();
+            TProtocol protocol = new  TBinaryProtocol(transport);
+            KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+            client.putKey(hint.key, hint.value, consistency_level);
+            transport.close();
+         }
+         catch(Exception e){
+         	System.out.println(e);
+         }
+            for(int i=0; i<hints.size();i++){
+                System.out.println("Performed Hinted Handoff");
+                if(hints.get(i)==hint){
+                hints.remove(i);
+                    }
+            }
+        }
+        
+    }
 
 
 // pre-configured replicas
