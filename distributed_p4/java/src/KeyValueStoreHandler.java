@@ -47,16 +47,44 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   private String remote_call_ip;
   private int remote_call_port;
   private List<Hint> hints;
+  private List<Hint> sendhints;
+  private List<Hint> receivedhints;
 
   public KeyValueStoreHandler(int port){
 	  this.port = port;
 	   try{
 	        keyValueList = new ArrayList<KeyValuePair>();
+		hints = new ArrayList<Hint>();
 	        getReplicas("Replicas.txt");
 	     }catch(IOException e){
 
 	}
-	  replay_commit_log(String.valueOf(port));	  
+	  replay_commit_log(String.valueOf(port));
+	  for(int i =0 ; i< rep_List.size(); i++){
+	  	if(rep_List.get(i).port == port){
+			
+		}else{
+	           remote_call_ip = rep_List.get(i).ip;
+		   remote_call_port = rep_List.get(i).port;
+		   transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
+                   transport.open();
+                   TProtocol protocol = new  TBinaryProtocol(transport);
+                   KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+                    try{
+	                    receivedhints = client.get_hint(ip_address, port);
+		       }
+                   catch(Exception e){
+	                     System.out.println("Cannot connect to replicas");
+	               }			 
+		}
+		if(receivedhints != null){
+			for(int i =0 ; i< receivedhints.size(); i++){
+				put_replica_key(receivedhints.get(i).key, receivedhints.get(i).port);
+			}
+		
+		}
+
+	  }
   }
   public void putKey(int key, java.lang.String value, int consistency_level) throws SystemException, org.apache.thrift.TException{  
         System.out.println("Put Key Called");
@@ -155,6 +183,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			}
 			catch(Exception e){
 				System.out.println(e);
+				System.out.println("Storing Hint");
+				storehint(remote_call_ip, remote_call_port, key, value);
 			}
 			i++;
 			count++;
@@ -242,45 +272,41 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
          throw systemException;
 
     }
+    System.out.println(result);
     if(result == ""){
         SystemException systemException = new SystemException();
         systemException.message = "key not in system";
         throw systemException;
-      }
+     }
       
       //perform Hinted_Handoff
-      hintedHandoff(consistency_level);
-      
+      //hintedHandoff(consistency_level);
+       
 	return result;
 }
     
-    public void hintedHandoff(int consistency_level){
-        List<Hint> hinted_list = hints; //temporary data structure
-        for(Hint hint: hinted_list){
-            //send hint to the server
-            remote_call_ip = hint.ip;
-            remote_call_port = hint.port;
-            try{
-            TTransport transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-            transport.open();
-            TProtocol protocol = new  TBinaryProtocol(transport);
-            KeyValueStore.Client client = new KeyValueStore.Client(protocol);
-            client.putKey(hint.key, hint.value, consistency_level);
-            transport.close();
-         }
-         catch(Exception e){
-         	System.out.println(e);
-         }
-            for(int i=0; i<hints.size();i++){
-                System.out.println("Performed Hinted Handoff");
-                if(hints.get(i)==hint){
-                hints.remove(i);
-                    }
-            }
-        }
-        
-    }
-
+	public void store_hint(String ip, int port, int key, String value){
+		Hint hint = new Hint();
+		hint.ip = ip;
+		hint.port = port;
+		hint.key = key;
+		hint.value = value;	
+		hints.put(hint);
+	}
+	
+	public List<Hint> get_hint(String ip, int port){
+		sendhints = new ArrayList<Hint>();
+		for(int i = 0 ; i < hints.size(); i++){
+			if(hints.get(i).port == port){
+				sendhints.put(hints.get(i));
+				hints.get(i).port = 0;
+			}
+		}
+		if(sendhints.size() > 0 )
+		    return sendhints;
+		else 
+		   return null;	
+	}
 
 // pre-configured replicas
   public static void getReplicas(String filename) throws IOException{
