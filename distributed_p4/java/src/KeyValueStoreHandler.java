@@ -50,7 +50,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   private List<Hint> sendhints;
   private List<Hint> receivedhints;
 
-  public KeyValueStoreHandler(int port){
+  public KeyValueStoreHandler(int port) throws org.apache.thrift.TException {
 	  this.port = port;
 	   try{
 	        keyValueList = new ArrayList<KeyValuePair>();
@@ -61,27 +61,34 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
 	  replay_commit_log(String.valueOf(port));
 	  for(int i =0 ; i< rep_List.size(); i++){
+		System.out.println("Inside For Loop");
 	  	if(rep_List.get(i).port == port){
 			
 		}else{
 	           remote_call_ip = rep_List.get(i).ip;
 		   remote_call_port = rep_List.get(i).port;
-		   transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-                   transport.open();
-                   TProtocol protocol = new  TBinaryProtocol(transport);
-                   KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+		   System.out.println("Let's see from here");
+		   System.out.println(remote_call_ip);
+		   System.out.println(remote_call_port);
+		   TTransport transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
                     try{
-	                    receivedhints = client.get_hint(ip_address, port);
+			      transport.open();
+			      TProtocol protocol = new  TBinaryProtocol(transport);
+			      KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+	                      receivedhints = client.get_hint(ip_address, port);
+			      //System.out.println(client.testConnection());
+			      System.out.println("How about from here");
 		       }
                    catch(Exception e){
 	                     System.out.println("Cannot connect to replicas");
-	               }			 
+	               }
+		     transport.close();		   
 		}
+		System.out.println("Reached Here");
 		if(receivedhints != null){
-			for(int i =0 ; i< receivedhints.size(); i++){
-				put_replica_key(receivedhints.get(i).key, receivedhints.get(i).port);
-			}
-		
+			for(int j =0 ; j< receivedhints.size(); j++){
+				put_replica_key(receivedhints.get(j).key, receivedhints.get(j).value);
+			}		
 		}
 
 	  }
@@ -132,11 +139,11 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	     System.out.println(remote_call_ip);
 	     System.out.println(remote_call_port);
 	     transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-	     transport.open();
-	     TProtocol protocol = new  TBinaryProtocol(transport);
-	     KeyValueStore.Client client = new KeyValueStore.Client(protocol);
 	      try{
-	           client.testConnection();
+		   transport.open();
+		   TProtocol protocol = new  TBinaryProtocol(transport);
+		   KeyValueStore.Client client = new KeyValueStore.Client(protocol);   
+		   client.testConnection();
 	           total_active_replicas++;
 	      }
 	           catch(Exception e){
@@ -174,17 +181,17 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			System.out.println(remote_call_ip);
 			System.out.println(remote_call_port);
 			transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-			transport.open();
-		        TProtocol protocol = new  TBinaryProtocol(transport);
-			KeyValueStore.Client client = new KeyValueStore.Client(protocol);
 			try{
-		          client.put_replica_key(key , value);
-			  total_success++;
+		           transport.open();
+			   TProtocol protocol = new  TBinaryProtocol(transport);
+			   KeyValueStore.Client client = new KeyValueStore.Client(protocol);
+			   client.put_replica_key(key , value);
+			   total_success++;
 			}
 			catch(Exception e){
 				System.out.println(e);
 				System.out.println("Storing Hint");
-				storehint(remote_call_ip, remote_call_port, key, value);
+				store_hint(remote_call_ip, remote_call_port, key, value);
 			}
 			i++;
 			count++;
@@ -203,6 +210,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   public String getKey(int key, int consistency_level) throws SystemException, org.apache.thrift.TException {
 	System.out.println("Get Value Called");
 	System.out.println(key);
+	int total_active_replicas = 0;
       TTransport transport;
       try{
          InetAddress ia = InetAddress.getLocalHost();
@@ -245,7 +253,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
                       if(pair.value != null) {
                         read_list.add(pair);
                         //System.out.println(pair.value);
-                        }
+		      }
                     }
                   catch(Exception e){
                       System.out.println(e);
@@ -267,7 +275,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
             }
           count++;
       }
-   
+	System.out.println(total_active_replicas);
+        System.out.println(consistency_level);	
     if(read_list.size() < consistency_level){
          System.out.println("Not enough server is active");
          SystemException systemException = new SystemException();
@@ -291,21 +300,21 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 		hint.port = port;
 		hint.key = key;
 		hint.value = value;	
-		hints.put(hint);
+		hints.add(hint);
 	}
 	
 	public List<Hint> get_hint(String ip, int port){
+		System.out.println("Getting Hints");
 		sendhints = new ArrayList<Hint>();
+		System.out.println("Reached Here 1");
 		for(int i = 0 ; i < hints.size(); i++){
 			if(hints.get(i).port == port){
-				sendhints.put(hints.get(i));
+				sendhints.add(hints.get(i));
 				hints.get(i).port = 0;
 			}
 		}
-		if(sendhints.size() > 0 )
-		    return sendhints;
-		else 
-		   return null;	
+	      return sendhints;	
+		
 	}
 
 // pre-configured replicas

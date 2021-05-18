@@ -40,5 +40,9 @@ service KeyValueStore {
 
   void replay_commit_log(1: string filename),
 
+  void store_hint(1: string ip, 2: i32 port, 3: i32 key, 4: string value),
+ 
+  list<Hint> get_hint(1: string ip , 2: i32 port),
+
   i32 testConnection(),
 }
