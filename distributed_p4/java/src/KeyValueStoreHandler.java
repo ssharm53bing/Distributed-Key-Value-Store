@@ -232,7 +232,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
                     }
                 }
                 result = resVal.value;
-              System.out.println(result);
+              //System.out.println(result);
               break;
             }
           count++;
