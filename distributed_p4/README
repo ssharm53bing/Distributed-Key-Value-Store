@@ -1,0 +1,15 @@
+run makefile
+
+start four server using the command ./server.sh port 
+run client using the command ./client.sh server_ip server_port operation(put/get) key value consistency_level(1 or 2).
+
+Everything is tested and works fine.
+
+Work Division
+Sandesh
+putkey
+hintedhandoff
+
+Naman
+getkey
+preconfiguration of server
