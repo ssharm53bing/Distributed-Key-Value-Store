@@ -1,3 +1,8 @@
+Replicated Key-Value Store with Hinted Handoff
+
+Programming Language: Python
+Tools: Apache Thrift
+
 run makefile
 
 start four server using the command ./server.sh port 
