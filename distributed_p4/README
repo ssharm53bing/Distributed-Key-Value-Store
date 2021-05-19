@@ -1,6 +1,6 @@
 Replicated Key-Value Store with Hinted Handoff
 
-Programming Language: Python
+Programming Language: Java
 Tools: Apache Thrift
 
 run makefile
