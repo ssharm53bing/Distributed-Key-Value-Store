@@ -61,13 +61,11 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
 	  replay_commit_log(String.valueOf(port));
 	  for(int i =0 ; i< rep_List.size(); i++){
-		System.out.println("Inside For Loop");
 	  	if(rep_List.get(i).port == port){
 			
 		}else{
 	           remote_call_ip = rep_List.get(i).ip;
 		   remote_call_port = rep_List.get(i).port;
-		   System.out.println("Let's see from here");
 		   System.out.println(remote_call_ip);
 		   System.out.println(remote_call_port);
 		   TTransport transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
@@ -76,20 +74,14 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			      TProtocol protocol = new  TBinaryProtocol(transport);
 			      KeyValueStore.Client client = new KeyValueStore.Client(protocol);
 	                      receivedhints = client.get_hint(ip_address, port);
-			      //System.out.println(client.testConnection());
-			      System.out.println("How about from here");
 		       }
                    catch(Exception e){
 	                     System.out.println("Cannot connect to replicas");
 	               }
 		     transport.close();		   
 		}
-		System.out.println("Reached Here");
 		if(receivedhints != null){
-			System.out.println("Hint is not null");
 			for(int j =0 ; j< receivedhints.size(); j++){
-				System.out.println("Received Hint key is " + receivedhints.get(j).key);
-				System.out.println("Received Hint Value is " + receivedhints.get(j).value);
 				put_replica_key(Integer.parseInt(receivedhints.get(j).key), receivedhints.get(j).value);
 			}		
 		}
@@ -114,7 +106,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
 	while(i < rep_List.size()){
 	 if(key >= rep_List.get(i).start_key && key <=rep_List.get(i).end_key){
-         	System.out.println("Got Replica Server");
 	      	 break;
 	 }
 	 i++;
@@ -122,13 +113,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	
 	j = i;
 	while(test_count < 3 ){
-	System.out.println(rep_List.get(j).ip);
-	System.out.println(rep_List.get(j).port);
-        System.out.println(ip_address);
-	System.out.println(port);
 
 	 if( rep_List.get(j).port == port){
-          System.out.println("Inside Replica Server");
           total_active_replicas++;					               
 	  j++;
 	  test_count++;
@@ -139,8 +125,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	 else{
 	     remote_call_ip = rep_List.get(j).ip;
 	     remote_call_port = rep_List.get(j).port;
-	     System.out.println(remote_call_ip);
-	     System.out.println(remote_call_port);
 	     transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
 	      try{
 		   transport.open();
@@ -160,7 +144,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
          transport.close();
 	}
 	}
-	System.out.println("Hello From Here");
 	if(total_active_replicas < consistency_level){
 	   SystemException systemException = new SystemException();
 	   systemException.message = "Not enough server is active";
@@ -180,9 +163,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 		else{
 			remote_call_ip = rep_List.get(i).ip;
 			remote_call_port = rep_List.get(i).port;
-			System.out.println("Storing the Value");
-			System.out.println(remote_call_ip);
-			System.out.println(remote_call_port);
 			transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
 			try{
 		           transport.open();
@@ -206,8 +186,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			
 	  	 }	
 	
-	}
-	System.out.println("Put Value Called1");	
+	}	
   }
 
   public String getKey(int key, int consistency_level) throws SystemException, org.apache.thrift.TException {
@@ -280,8 +259,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
             }
           count++;
       }
-	System.out.println(total_active_replicas);
-        System.out.println(consistency_level);	
     if(total_active_replicas < consistency_level){
          System.out.println("Not enough server is active");
          SystemException systemException = new SystemException();
@@ -289,7 +266,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
          throw systemException;
 
     }
-    System.out.println(result);
     if(result == ""){
         System.out.println("Key not in the system");
 	SystemException systemException = new SystemException();
@@ -310,16 +286,11 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	}
 	
 	public List<Hint> get_hint(String ip, int port){
-		System.out.println("Getting Hints");
 		sendhints = new ArrayList<Hint>();
-		System.out.println("Reached Here 1");
 		for(int i = 0 ; i < hints.size(); i++){
-			System.out.println("Hint is not null");
 			if(hints.get(i).port == port){
 				sendhints.add(hints.get(i));
 				hints.get(i).port = 0;
-				System.out.println(hints.get(i).key);
-				System.out.println(hints.get(i).value);
 			}
 		}
 	      return sendhints;	
@@ -359,8 +330,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   }
   
   public void put_replica_key(int key, String value){
-        System.out.println("Put Value Called1");
-        System.out.println(key);
 	write_commit_log(key,value);
         int i = 0;
         while(i < keyValueList.size()){
@@ -403,8 +372,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   }
 
  public void restore_replica_key(int key, String value){
-	System.out.println("Put Value Called1");
-	System.out.println(key);
 	int i = 0;
 	while(i < keyValueList.size()){
 	   if(keyValueList.get(i).key == key){
@@ -451,7 +418,6 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
     try {                                                                                                                        fileReader = new BufferedReader(new FileReader(file));
 	String line = null;
 	while ((line = fileReader.readLine()) != null) {
-	   System.out.println("Inside While Loop");
 	   String[] replicas = line.split(",");
 	   int key = Integer.valueOf(replicas[0]);
 	   String value = replicas[1];
