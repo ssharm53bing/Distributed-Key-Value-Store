@@ -111,10 +111,10 @@ public class JavaServer {
        * from the factory class. 
        */
       TServerTransport serverTransport = TSSLTransportFactory.getServerSocket(port, 0, null, params);
-      TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
+      //TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
 
       // Use this for a multi threaded server
-      // TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
+         TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
 
       System.out.println("Starting the secure server...");
       server.serve();

@@ -24,7 +24,7 @@ public class KeyValueStore {
 
     public void replay_commit_log(java.lang.String filename) throws org.apache.thrift.TException;
 
-    public void store_hint(java.lang.String ip, int port, int key, java.lang.String value) throws org.apache.thrift.TException;
+    public void store_hint(java.lang.String ip, int port, java.lang.String key, java.lang.String value) throws org.apache.thrift.TException;
 
     public java.util.List<Hint> get_hint(java.lang.String ip, int port) throws org.apache.thrift.TException;
 
@@ -48,7 +48,7 @@ public class KeyValueStore {
 
     public void replay_commit_log(java.lang.String filename, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
-    public void store_hint(java.lang.String ip, int port, int key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
+    public void store_hint(java.lang.String ip, int port, java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
     public void get_hint(java.lang.String ip, int port, org.apache.thrift.async.AsyncMethodCallback<java.util.List<Hint>> resultHandler) throws org.apache.thrift.TException;
 
@@ -234,13 +234,13 @@ public class KeyValueStore {
       return;
     }
 
-    public void store_hint(java.lang.String ip, int port, int key, java.lang.String value) throws org.apache.thrift.TException
+    public void store_hint(java.lang.String ip, int port, java.lang.String key, java.lang.String value) throws org.apache.thrift.TException
     {
       send_store_hint(ip, port, key, value);
       recv_store_hint();
     }
 
-    public void send_store_hint(java.lang.String ip, int port, int key, java.lang.String value) throws org.apache.thrift.TException
+    public void send_store_hint(java.lang.String ip, int port, java.lang.String key, java.lang.String value) throws org.apache.thrift.TException
     {
       store_hint_args args = new store_hint_args();
       args.setIp(ip);
@@ -563,7 +563,7 @@ public class KeyValueStore {
       }
     }
 
-    public void store_hint(java.lang.String ip, int port, int key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+    public void store_hint(java.lang.String ip, int port, java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       store_hint_call method_call = new store_hint_call(ip, port, key, value, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -573,9 +573,9 @@ public class KeyValueStore {
     public static class store_hint_call extends org.apache.thrift.async.TAsyncMethodCall<Void> {
       private java.lang.String ip;
       private int port;
-      private int key;
+      private java.lang.String key;
       private java.lang.String value;
-      public store_hint_call(java.lang.String ip, int port, int key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public store_hint_call(java.lang.String ip, int port, java.lang.String key, java.lang.String value, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.ip = ip;
         this.port = port;
@@ -6981,7 +6981,7 @@ public class KeyValueStore {
 
     private static final org.apache.thrift.protocol.TField IP_FIELD_DESC = new org.apache.thrift.protocol.TField("ip", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
-    private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.STRING, (short)3);
     private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new store_hint_argsStandardSchemeFactory();
@@ -6989,7 +6989,7 @@ public class KeyValueStore {
 
     public @org.apache.thrift.annotation.Nullable java.lang.String ip; // required
     public int port; // required
-    public int key; // required
+    public @org.apache.thrift.annotation.Nullable java.lang.String key; // required
     public @org.apache.thrift.annotation.Nullable java.lang.String value; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -7063,7 +7063,6 @@ public class KeyValueStore {
 
     // isset id assignments
     private static final int __PORT_ISSET_ID = 0;
-    private static final int __KEY_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
@@ -7073,7 +7072,7 @@ public class KeyValueStore {
       tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -7086,7 +7085,7 @@ public class KeyValueStore {
     public store_hint_args(
       java.lang.String ip,
       int port,
-      int key,
+      java.lang.String key,
       java.lang.String value)
     {
       this();
@@ -7094,7 +7093,6 @@ public class KeyValueStore {
       this.port = port;
       setPortIsSet(true);
       this.key = key;
-      setKeyIsSet(true);
       this.value = value;
     }
 
@@ -7107,7 +7105,9 @@ public class KeyValueStore {
         this.ip = other.ip;
       }
       this.port = other.port;
-      this.key = other.key;
+      if (other.isSetKey()) {
+        this.key = other.key;
+      }
       if (other.isSetValue()) {
         this.value = other.value;
       }
@@ -7122,8 +7122,7 @@ public class KeyValueStore {
       this.ip = null;
       setPortIsSet(false);
       this.port = 0;
-      setKeyIsSet(false);
-      this.key = 0;
+      this.key = null;
       this.value = null;
     }
 
@@ -7175,27 +7174,29 @@ public class KeyValueStore {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
     }
 
-    public int getKey() {
+    @org.apache.thrift.annotation.Nullable
+    public java.lang.String getKey() {
       return this.key;
     }
 
-    public store_hint_args setKey(int key) {
+    public store_hint_args setKey(@org.apache.thrift.annotation.Nullable java.lang.String key) {
       this.key = key;
-      setKeyIsSet(true);
       return this;
     }
 
     public void unsetKey() {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __KEY_ISSET_ID);
+      this.key = null;
     }
 
     /** Returns true if field key is set (has been assigned a value) and false otherwise */
     public boolean isSetKey() {
-      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __KEY_ISSET_ID);
+      return this.key != null;
     }
 
     public void setKeyIsSet(boolean value) {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
+      if (!value) {
+        this.key = null;
+      }
     }
 
     @org.apache.thrift.annotation.Nullable
@@ -7245,7 +7246,7 @@ public class KeyValueStore {
         if (value == null) {
           unsetKey();
         } else {
-          setKey((java.lang.Integer)value);
+          setKey((java.lang.String)value);
         }
         break;
 
@@ -7331,12 +7332,12 @@ public class KeyValueStore {
           return false;
       }
 
-      boolean this_present_key = true;
-      boolean that_present_key = true;
+      boolean this_present_key = true && this.isSetKey();
+      boolean that_present_key = true && that.isSetKey();
       if (this_present_key || that_present_key) {
         if (!(this_present_key && that_present_key))
           return false;
-        if (this.key != that.key)
+        if (!this.key.equals(that.key))
           return false;
       }
 
@@ -7362,7 +7363,9 @@ public class KeyValueStore {
 
       hashCode = hashCode * 8191 + port;
 
-      hashCode = hashCode * 8191 + key;
+      hashCode = hashCode * 8191 + ((isSetKey()) ? 131071 : 524287);
+      if (isSetKey())
+        hashCode = hashCode * 8191 + key.hashCode();
 
       hashCode = hashCode * 8191 + ((isSetValue()) ? 131071 : 524287);
       if (isSetValue())
@@ -7453,7 +7456,11 @@ public class KeyValueStore {
       first = false;
       if (!first) sb.append(", ");
       sb.append("key:");
-      sb.append(this.key);
+      if (this.key == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.key);
+      }
       first = false;
       if (!first) sb.append(", ");
       sb.append("value:");
@@ -7525,8 +7532,8 @@ public class KeyValueStore {
               }
               break;
             case 3: // KEY
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.key = iprot.readI32();
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.key = iprot.readString();
                 struct.setKeyIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -7563,9 +7570,11 @@ public class KeyValueStore {
         oprot.writeFieldBegin(PORT_FIELD_DESC);
         oprot.writeI32(struct.port);
         oprot.writeFieldEnd();
-        oprot.writeFieldBegin(KEY_FIELD_DESC);
-        oprot.writeI32(struct.key);
-        oprot.writeFieldEnd();
+        if (struct.key != null) {
+          oprot.writeFieldBegin(KEY_FIELD_DESC);
+          oprot.writeString(struct.key);
+          oprot.writeFieldEnd();
+        }
         if (struct.value != null) {
           oprot.writeFieldBegin(VALUE_FIELD_DESC);
           oprot.writeString(struct.value);
@@ -7609,7 +7618,7 @@ public class KeyValueStore {
           oprot.writeI32(struct.port);
         }
         if (struct.isSetKey()) {
-          oprot.writeI32(struct.key);
+          oprot.writeString(struct.key);
         }
         if (struct.isSetValue()) {
           oprot.writeString(struct.value);
@@ -7629,7 +7638,7 @@ public class KeyValueStore {
           struct.setPortIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.key = iprot.readI32();
+          struct.key = iprot.readString();
           struct.setKeyIsSet(true);
         }
         if (incoming.get(3)) {

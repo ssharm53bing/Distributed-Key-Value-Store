@@ -78,7 +78,7 @@ public class JavaClient {
        String value = client.getKey(key,consistency_level);
        System.out.println(value);
   }catch(SystemException e){	
-  
+  	System.out.println(e);
   }
  }
   private static void performWrite(KeyValueStore.Client client, int key, String value, int consistency_level) throws TException
@@ -87,6 +87,11 @@ public class JavaClient {
        keyValuePair.key = 101;
        keyValuePair.value = "Hello World";
        System.out.println(keyValuePair.key);
+       try{
        client.putKey(key,value , consistency_level);
+       }
+       catch(SystemException e){
+       	System.out.println(e);
+       }
  }
 }

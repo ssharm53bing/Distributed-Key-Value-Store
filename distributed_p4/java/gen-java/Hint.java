@@ -11,7 +11,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
 
   private static final org.apache.thrift.protocol.TField IP_FIELD_DESC = new org.apache.thrift.protocol.TField("ip", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("key", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new HintStandardSchemeFactory();
@@ -19,7 +19,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
 
   public @org.apache.thrift.annotation.Nullable java.lang.String ip; // optional
   public int port; // optional
-  public int key; // optional
+  public @org.apache.thrift.annotation.Nullable java.lang.String key; // optional
   public @org.apache.thrift.annotation.Nullable java.lang.String value; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -93,7 +93,6 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
 
   // isset id assignments
   private static final int __PORT_ISSET_ID = 0;
-  private static final int __KEY_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   private static final _Fields optionals[] = {_Fields.IP,_Fields.PORT,_Fields.KEY,_Fields.VALUE};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -104,7 +103,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
     tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.KEY, new org.apache.thrift.meta_data.FieldMetaData("key", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -123,7 +122,9 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
       this.ip = other.ip;
     }
     this.port = other.port;
-    this.key = other.key;
+    if (other.isSetKey()) {
+      this.key = other.key;
+    }
     if (other.isSetValue()) {
       this.value = other.value;
     }
@@ -138,8 +139,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
     this.ip = null;
     setPortIsSet(false);
     this.port = 0;
-    setKeyIsSet(false);
-    this.key = 0;
+    this.key = null;
     this.value = null;
   }
 
@@ -191,27 +191,29 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
   }
 
-  public int getKey() {
+  @org.apache.thrift.annotation.Nullable
+  public java.lang.String getKey() {
     return this.key;
   }
 
-  public Hint setKey(int key) {
+  public Hint setKey(@org.apache.thrift.annotation.Nullable java.lang.String key) {
     this.key = key;
-    setKeyIsSet(true);
     return this;
   }
 
   public void unsetKey() {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __KEY_ISSET_ID);
+    this.key = null;
   }
 
   /** Returns true if field key is set (has been assigned a value) and false otherwise */
   public boolean isSetKey() {
-    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __KEY_ISSET_ID);
+    return this.key != null;
   }
 
   public void setKeyIsSet(boolean value) {
-    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __KEY_ISSET_ID, value);
+    if (!value) {
+      this.key = null;
+    }
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -261,7 +263,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
       if (value == null) {
         unsetKey();
       } else {
-        setKey((java.lang.Integer)value);
+        setKey((java.lang.String)value);
       }
       break;
 
@@ -352,7 +354,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
     if (this_present_key || that_present_key) {
       if (!(this_present_key && that_present_key))
         return false;
-      if (this.key != that.key)
+      if (!this.key.equals(that.key))
         return false;
     }
 
@@ -382,7 +384,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
 
     hashCode = hashCode * 8191 + ((isSetKey()) ? 131071 : 524287);
     if (isSetKey())
-      hashCode = hashCode * 8191 + key;
+      hashCode = hashCode * 8191 + key.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetValue()) ? 131071 : 524287);
     if (isSetValue())
@@ -478,7 +480,11 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
     if (isSetKey()) {
       if (!first) sb.append(", ");
       sb.append("key:");
-      sb.append(this.key);
+      if (this.key == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.key);
+      }
       first = false;
     }
     if (isSetValue()) {
@@ -553,8 +559,8 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
             }
             break;
           case 3: // KEY
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.key = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.key = iprot.readString();
               struct.setKeyIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -595,10 +601,12 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
         oprot.writeI32(struct.port);
         oprot.writeFieldEnd();
       }
-      if (struct.isSetKey()) {
-        oprot.writeFieldBegin(KEY_FIELD_DESC);
-        oprot.writeI32(struct.key);
-        oprot.writeFieldEnd();
+      if (struct.key != null) {
+        if (struct.isSetKey()) {
+          oprot.writeFieldBegin(KEY_FIELD_DESC);
+          oprot.writeString(struct.key);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.value != null) {
         if (struct.isSetValue()) {
@@ -645,7 +653,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
         oprot.writeI32(struct.port);
       }
       if (struct.isSetKey()) {
-        oprot.writeI32(struct.key);
+        oprot.writeString(struct.key);
       }
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
@@ -665,7 +673,7 @@ public class Hint implements org.apache.thrift.TBase<Hint, Hint._Fields>, java.i
         struct.setPortIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.key = iprot.readI32();
+        struct.key = iprot.readString();
         struct.setKeyIsSet(true);
       }
       if (incoming.get(3)) {

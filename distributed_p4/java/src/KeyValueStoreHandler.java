@@ -86,8 +86,11 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 		}
 		System.out.println("Reached Here");
 		if(receivedhints != null){
+			System.out.println("Hint is not null");
 			for(int j =0 ; j< receivedhints.size(); j++){
-				put_replica_key(receivedhints.get(j).key, receivedhints.get(j).value);
+				System.out.println("Received Hint key is " + receivedhints.get(j).key);
+				System.out.println("Received Hint Value is " + receivedhints.get(j).value);
+				put_replica_key(Integer.parseInt(receivedhints.get(j).key), receivedhints.get(j).value);
 			}		
 		}
 
@@ -191,7 +194,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 			catch(Exception e){
 				System.out.println(e);
 				System.out.println("Storing Hint");
-				store_hint(remote_call_ip, remote_call_port, key, value);
+				store_hint(remote_call_ip, remote_call_port, String.valueOf(key), value);
 			}
 			i++;
 			count++;
@@ -210,7 +213,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
   public String getKey(int key, int consistency_level) throws SystemException, org.apache.thrift.TException {
 	System.out.println("Get Value Called");
 	System.out.println(key);
-	int total_active_replicas = 0;
+	int total_active_replicas = 3;
       TTransport transport;
       try{
          InetAddress ia = InetAddress.getLocalHost();
@@ -245,10 +248,10 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
                   System.out.println(remote_call_ip);
                   System.out.println(remote_call_port);
                   transport = new TSocket(remote_call_ip, Integer.valueOf(remote_call_port));
-                  transport.open();
-                  TProtocol protocol = new  TBinaryProtocol(transport);
-                  KeyValueStore.Client client = new KeyValueStore.Client(protocol);
                   try{
+	              transport.open();
+                      TProtocol protocol = new  TBinaryProtocol(transport);
+                      KeyValueStore.Client client = new KeyValueStore.Client(protocol); 		      
                       KeyValuePair pair = client.get_value(key);
                       if(pair.value != null) {
                         read_list.add(pair);
@@ -257,6 +260,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
                     }
                   catch(Exception e){
                       System.out.println(e);
+		      System.out.println("Cannot Connect to Replicas");
+		      total_active_replicas--;
                   }
                   transport.close();
               }
@@ -277,7 +282,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
       }
 	System.out.println(total_active_replicas);
         System.out.println(consistency_level);	
-    if(read_list.size() < consistency_level){
+    if(total_active_replicas < consistency_level){
          System.out.println("Not enough server is active");
          SystemException systemException = new SystemException();
          systemException.message = "Not enough server is active";
@@ -286,7 +291,8 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
     }
     System.out.println(result);
     if(result == ""){
-        SystemException systemException = new SystemException();
+        System.out.println("Key not in the system");
+	SystemException systemException = new SystemException();
         systemException.message = "key not in system";
         throw systemException;
      }
@@ -294,7 +300,7 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 	return result;
 }
     
-	public void store_hint(String ip, int port, int key, String value){
+	public void store_hint(String ip, int port, String key, String value){
 		Hint hint = new Hint();
 		hint.ip = ip;
 		hint.port = port;
@@ -308,9 +314,12 @@ public class KeyValueStoreHandler implements KeyValueStore.Iface {
 		sendhints = new ArrayList<Hint>();
 		System.out.println("Reached Here 1");
 		for(int i = 0 ; i < hints.size(); i++){
+			System.out.println("Hint is not null");
 			if(hints.get(i).port == port){
 				sendhints.add(hints.get(i));
 				hints.get(i).port = 0;
+				System.out.println(hints.get(i).key);
+				System.out.println(hints.get(i).value);
 			}
 		}
 	      return sendhints;	

@@ -18,7 +18,7 @@ struct ReplicaInfo{
 struct Hint{
   1: optional string ip;
   2: optional i32 port;
-  3: optional i32 key;
+  3: optional string key;
   4: optional string value;
 }
 
@@ -40,7 +40,7 @@ service KeyValueStore {
 
   void replay_commit_log(1: string filename),
 
-  void store_hint(1: string ip, 2: i32 port, 3: i32 key, 4: string value),
+  void store_hint(1: string ip, 2: i32 port, 3: string key, 4: string value),
  
   list<Hint> get_hint(1: string ip , 2: i32 port),
 
